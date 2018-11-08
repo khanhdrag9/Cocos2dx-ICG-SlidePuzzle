@@ -7,7 +7,7 @@ int backupNumberStart;
 
 GamePlay::GamePlay() :
 	_isEndGame(true),
-	_numberChanges(4),
+	_numberChanges(25),
 	_numberStart(15),
 	_titlePressed(nullptr),
 	_oldPosTitlePressed(Vec2(0, 0)),
