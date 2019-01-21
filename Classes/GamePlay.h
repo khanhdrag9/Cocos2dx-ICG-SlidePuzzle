@@ -1,8 +1,9 @@
 #pragma once
 #include "cocos2d.h"
-#include <vector>
-#include "Title.h"
 #include "Defines.h"
+#include <vector>
+
+class Title;
 
 typedef enum listAction {
 	LEFT,
@@ -51,7 +52,7 @@ class GamePlay : public cocos2d::Layer
 
 	void mergeImage(float);
 	Title* findTitleByPos(const cocos2d::Vec2& pos);
-	cocos2d::Vec2& findPosByTitle(const Title* title) const;
+	const cocos2d::Vec2& findPosByTitle(const Title* title) const;
 
 	void win();
 	void lose();

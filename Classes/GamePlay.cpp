@@ -1,5 +1,7 @@
 #include "GamePlay.h"
 #include <ctime>
+#include "Title.h"
+
 
 USING_NS_CC;
 int backupNumberChanges;
@@ -18,9 +20,6 @@ GamePlay::GamePlay() :
 
 GamePlay::~GamePlay()
 {
-	for (auto x : _listTitles)
-		CC_SAFE_DELETE(x);
-
 	_listTitles.clear();
 	_listPos.clear();
 
@@ -182,9 +181,9 @@ Title* GamePlay::findTitleByPos(const Vec2& pos)
 	return nullptr;
 }
 
-Vec2& GamePlay::findPosByTitle(const Title* title) const
+const Vec2& GamePlay::findPosByTitle(const Title* title) const
 {
-	for (auto x : _listPos)
+	for (auto& x : _listPos)
 	{
 		if (x == title->getPosition())
 			return x;
@@ -293,22 +292,25 @@ void GamePlay::lose()
 
 void GamePlay::reset()
 {
-#if CHEAT
-	_isAuto = false;
-	_historyMove.clear();
-#endif
-	_numberChanges = backupNumberChanges;
-	_numberStart = backupNumberStart;
-
-	if (_result)
-		_result->setVisible(false);
-
-	for (int i = 0; i < _listTitles.size(); i++)
-	{
-		//_listTitles[i]->setPosition(_listPos[i]);
-		_listTitles[i]->runAction(MoveTo::create(0.2, _listPos[i]));
-	}
-	this->schedule(schedule_selector(GamePlay::setupBoard), TIME_SETUP_EACH_TITLE + 0.01, backupNumberChanges, TIME_PRE_PLAY);
+//#if CHEAT
+//    _isAuto = false;
+//    _historyMove.clear();
+//#endif
+//    _numberChanges = backupNumberChanges;
+//    _numberStart = backupNumberStart;
+//
+//    if (_result)
+//        _result->setVisible(false);
+//
+//    for (int i = 0; i < _listTitles.size(); i++)
+//    {
+//        //_listTitles[i]->setPosition(_listPos[i]);
+//        _listTitles[i]->runAction(MoveTo::create(0.2, _listPos[i]));
+//    }
+//    this->schedule(schedule_selector(GamePlay::setupBoard), TIME_SETUP_EACH_TITLE + 0.01, backupNumberChanges, TIME_PRE_PLAY);
+    
+    auto gameplay = GamePlay::createScene();
+    Director::getInstance()->replaceScene(TransitionFlipY::create(0.5, gameplay));
 }
 
 bool GamePlay::onTouchBegin(cocos2d::Touch* touch, cocos2d::Event* event)
