@@ -8,6 +8,7 @@
 #include "MenuScene.h"
 #include "Defines.h"
 #include "GamePlay.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -44,6 +45,16 @@ bool MenuScene::init()
         Director::getInstance()->replaceScene(TransitionFlipX::create(0.5, gameplay));
     };
     _eventDispatcher->addEventListenerWithSceneGraphPriority(touchlistener, this);
+    
+    //pre load all audio
+    auto audio = CocosDenshion::SimpleAudioEngine::getInstance();
+    audio->preloadBackgroundMusic(MUSIC_MENU);
+    audio->preloadBackgroundMusic(MUSIC_PLAY);
+    audio->preloadBackgroundMusic(MUSIC_WIN);
+    audio->preloadEffect(SOUND_SLIDE);
+    audio->preloadEffect(SOUND_RESET);
+    
+    CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic(MUSIC_MENU, true);
     
     return true;
 }

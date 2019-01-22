@@ -1,7 +1,9 @@
 #include "GamePlay.h"
 #include <ctime>
 #include "Title.h"
+#include "SimpleAudioEngine.h"
 
+using namespace CocosDenshion;
 
 USING_NS_CC;
 int backupNumberChanges;
@@ -42,6 +44,10 @@ bool GamePlay::init()
 		return false;
 
 	srand(time(NULL));
+    
+    CocosDenshion::SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+    CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic(MUSIC_PLAY, true);
+    SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.25f);
 
 	createTitles();	
 	createMenu();
@@ -58,7 +64,7 @@ bool GamePlay::init()
 	backupNumberStart = _numberStart;
 	this->schedule(schedule_selector(GamePlay::setupBoard), TIME_SETUP_EACH_TITLE + 0.01, backupNumberChanges, TIME_PRE_PLAY);
 	this->scheduleUpdate();
-
+    
 	return true;
 }
 
@@ -272,6 +278,9 @@ void GamePlay::win()
 		_result->setPosition(_result->getContentSize().width * 0.6, _screenSize.height - _result->getContentSize().height * 1.5f);
 		_result->setColor(Color3B::YELLOW);
 		this->addChild(_result);
+        SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+        SimpleAudioEngine::getInstance()->playBackgroundMusic(MUSIC_WIN, true);
+        SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(1.f);
 	}
 	else
 	{
@@ -285,7 +294,6 @@ void GamePlay::lose()
 {
 	CCLOG("Lose");
 	_isEndGame = true;
-
 
 }
 
@@ -308,6 +316,9 @@ void GamePlay::reset()
 //        _listTitles[i]->runAction(MoveTo::create(0.2, _listPos[i]));
 //    }
 //    this->schedule(schedule_selector(GamePlay::setupBoard), TIME_SETUP_EACH_TITLE + 0.01, backupNumberChanges, TIME_PRE_PLAY);
+    
+    SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+    SimpleAudioEngine::getInstance()->playEffect(SOUND_RESET);
     
     auto gameplay = GamePlay::createScene();
     Director::getInstance()->replaceScene(TransitionFlipY::create(0.5, gameplay));
@@ -358,15 +369,6 @@ bool GamePlay::onTouchBegin(cocos2d::Touch* touch, cocos2d::Event* event)
 				//_spaceTouchAndTitle = touchPos - x->getPosition();
 				_titlePressed = x;
 
-				/*if (x->getPositionX() > _listTitles[_numberStart]->getPositionX())
-					_directionMove = LEFT;
-				else if (x->getPositionX() < _listTitles[_numberStart]->getPositionX())
-					_directionMove = RIGHT;
-				else if (x->getPositionY() > _listTitles[_numberStart]->getPositionY())
-					_directionMove = DOWN;
-				else if (x->getPositionY() < _listTitles[_numberStart]->getPositionY())
-					_directionMove = UP;*/
-
 				return true;
 			}
 		}
@@ -377,36 +379,7 @@ bool GamePlay::onTouchBegin(cocos2d::Touch* touch, cocos2d::Event* event)
 
 void GamePlay::onTouchMove(Touch* touch, Event* event)
 {
-	//for slide title
-	/*float newPosX, newPosY;
-	if (_titlePressed != nullptr)
-	{
-		switch (_directionMove)
-		{
-		case LEFT:
-			newPosX = touch->getLocation().x - _spaceTouchAndTitle.x;
-			if (newPosX < _oldPosTitlePressed.x)
-				_titlePressed->setPositionX(newPosX);
-			break;
-		case RIGHT:
-			newPosX = touch->getLocation().x - _spaceTouchAndTitle.x;
-			if (newPosX > _oldPosTitlePressed.x)
-				_titlePressed->setPositionX(newPosX);
-			break;
-		case UP:
-			newPosY = touch->getLocation().y - _spaceTouchAndTitle.y;
-			if (newPosY > _oldPosTitlePressed.y)
-				_titlePressed->setPositionY(newPosY);
-			break;
-		case DOWN:
-			newPosY = touch->getLocation().y - _spaceTouchAndTitle.y;
-			if (newPosY < _oldPosTitlePressed.y)
-				_titlePressed->setPositionY(newPosY);
-			break;
-		default:
-			break;
-		}
-	}*/
+	
 }
 
 void GamePlay::onTouchRelease(Touch* touch, Event* event)
@@ -418,6 +391,7 @@ void GamePlay::onTouchRelease(Touch* touch, Event* event)
 
 	if (_titlePressed)
 	{
+        SimpleAudioEngine::getInstance()->playEffect(SOUND_SLIDE);
 		_titlePressed->runAction(MoveTo::create(SPEED_MOVE_TITLE, _listPos[_numberStart]));
 
 		for (int i = 0; i < _listPos.size(); i++)
