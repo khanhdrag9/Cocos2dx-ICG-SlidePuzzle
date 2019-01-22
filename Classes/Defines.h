@@ -2,7 +2,7 @@
 
 #define CHEAT 1
 #if CHEAT
-#define SPEED_MOVE_AUTO 0.1f
+#define SPEED_MOVE_AUTO 0.05f
 #endif
 
 #define LABEL_FONT "fonts/Marker Felt.ttf"

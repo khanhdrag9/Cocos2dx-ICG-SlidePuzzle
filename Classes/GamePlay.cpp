@@ -387,6 +387,8 @@ void GamePlay::onTouchRelease(Touch* touch, Event* event)
 #if CHEAT
 	CCLOG("play: %d", _numberStart);
 	_historyMove.push_back(_numberStart);
+    
+    if(_isAuto)return;
 #endif
 
 	if (_titlePressed)
