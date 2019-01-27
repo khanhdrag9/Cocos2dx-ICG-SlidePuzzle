@@ -307,7 +307,7 @@ void GamePlay::win()
 	if (_result == nullptr)
 	{
 		_result = Label::createWithTTF("WIN", LABEL_FONT, _screenSize.height * 0.1);
-		_result->setPosition(_result->getContentSize().width * 0.6, _screenSize.height - _result->getContentSize().height * 2.0f);
+		_result->setPosition(_screenSize.width / 2.f + _origin.x, _screenSize.height - _result->getContentSize().height);
 		_result->setColor(Color3B::YELLOW);
 		this->addChild(_result);
         SimpleAudioEngine::getInstance()->stopBackgroundMusic();
