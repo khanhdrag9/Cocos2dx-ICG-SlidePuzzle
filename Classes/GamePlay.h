@@ -18,12 +18,25 @@ typedef enum listAction {
 
 class GamePlay : public cocos2d::Layer
 {
+    
+public:
+    static const cocos2d::Vec2 size1x1;
+    static const cocos2d::Vec2 size3x4;
+    static const cocos2d::Vec2 size4x3;
+    static const cocos2d::Vec2 size16x9;
+    static const cocos2d::Vec2 size9x16;
+    
+private:
 	std::vector<Title*> _listTitles;
 	std::vector<cocos2d::Vec2> _listPos;
 	bool _isEndGame;
 
 	cocos2d::Size _screenSize;
-	float _sizeTitle;
+    cocos2d::Vec2 _origin;
+    
+	float _sizeTitleW;
+    float _sizeTitleH;
+    float _sizeTitle;
 	int _numberStart;	//index of empty title
 	int _justnumber;
 	int _numberChanges;

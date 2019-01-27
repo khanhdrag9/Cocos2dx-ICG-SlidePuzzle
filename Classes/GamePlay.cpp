@@ -6,8 +6,15 @@
 using namespace CocosDenshion;
 
 USING_NS_CC;
+
 int backupNumberChanges;
 int backupNumberStart;
+
+const Vec2 GamePlay::size1x1 = Vec2(4,4);
+const Vec2 GamePlay::size3x4 = Vec2(4,4);
+const Vec2 GamePlay::size4x3 = Vec2(4,4);
+const Vec2 GamePlay::size16x9 = Vec2(6,4);
+const Vec2 GamePlay::size9x16 = Vec2(4,6);
 
 GamePlay::GamePlay() :
 	_isEndGame(true),
@@ -59,10 +66,10 @@ bool GamePlay::init()
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchlistener, this);
 
 	//update
-	_listTitles[_numberStart]->setVisible(false);
+	//_listTitles[_numberStart]->setVisible(false);
 	backupNumberChanges = _numberChanges;
 	backupNumberStart = _numberStart;
-	this->schedule(schedule_selector(GamePlay::setupBoard), TIME_SETUP_EACH_TITLE + 0.01, backupNumberChanges, TIME_PRE_PLAY);
+	//this->schedule(schedule_selector(GamePlay::setupBoard), TIME_SETUP_EACH_TITLE + 0.01, backupNumberChanges, TIME_PRE_PLAY);
 	this->scheduleUpdate();
     
 	return true;
@@ -134,47 +141,72 @@ void GamePlay::createTitles()
 	image->autorelease();
 
 	_screenSize = Director::getInstance()->getVisibleSize();
+    _origin = Director::getInstance()->getVisibleOrigin();
 	float minSide = _screenSize.width < _screenSize.height ? _screenSize.width : _screenSize.height;
+    auto imageSize = textureParent->getContentSize();
+
 	//create size of title
-	auto sizeImage = textureParent->getContentSize();
-	float ratio = minSide / (sizeImage.width);
-	ratio *= 0.9;	//to not touch the screen border
-	float sizeTitleOnImage = sizeImage.width / NUMBER_TITLES;
-	float sizeTitleOnGame = sizeTitleOnImage * ratio;
-	_sizeTitle = sizeTitleOnGame;
-
+    Vec2 boardsize = GamePlay::size1x1;
+    float ratio = 1.f;
+    if(imageSize.width > imageSize.height)
+    {
+        
+    }
+    else if(imageSize.height > imageSize.width)
+    {
+        
+    }
+    else
+    {
+        boardsize = GamePlay::size1x1;
+        _sizeTitleW = imageSize.width / boardsize.x;
+        _sizeTitleH = imageSize.height / boardsize.y;
+        float ratioW = (_screenSize.width / boardsize.x) / _sizeTitleW;
+        float ratioH = (_screenSize.height / boardsize.y) / _sizeTitleH;
+        
+        ratio = ratioW < ratioH ? ratioW : ratioH;
+        ratio *= 0.95;
+    }
+    
+    float sizeInImageW = _sizeTitleW;
+    float sizeInImageH = _sizeTitleH;
+    _sizeTitleW *= ratio;
+    _sizeTitleH *= ratio;
+    
 	//create sprite
-	float x = 0, y = 0;
-	float startx = _screenSize.width * 0.5f + sizeTitleOnGame * 0.5 - RANGER_TITLES * 0.5 - sizeTitleOnGame - (NUMBER_TITLES / 2 - 1) * (sizeTitleOnGame + RANGER_TITLES);
-	float px = startx;
-	float py = _screenSize.height * 0.5f - sizeTitleOnGame * 0.5 + RANGER_TITLES * 0.5 + sizeTitleOnGame + (NUMBER_TITLES / 2 - 1) * (sizeTitleOnGame + RANGER_TITLES);
-	for (int i = 0; i < NUMBER_TITLES * NUMBER_TITLES; i++)
-	{
-		_listPos.push_back(Vec2(px, py));	//list right position
-
-		Title* title = Title::createTitle(i + 1, textureParent, Rect(x, y, sizeTitleOnImage, sizeTitleOnImage));
-		title->setScale(ratio);
-		title->setPosition(px, py);
-		this->addChild(title);
-		_listTitles.push_back(title);
-
-		//next postion
-		px += (sizeTitleOnGame + 5);
-		if (px + (sizeTitleOnGame + 5) > _screenSize.width)
-		{
-			px = startx;
-			py -= (sizeTitleOnGame + 5);
-		}
-
-		//next rect on image
-		x += sizeTitleOnImage;
-		if (x == sizeImage.width)
-		{
-			x = 0;
-			y += sizeTitleOnImage;
-		}
-
-	}
+    float centerX = _screenSize.width / 2.f;
+    float startx = RANGER_TITLES + _sizeTitleW / 2.f + _origin.x;
+    float px = startx;
+    float py = RANGER_TITLES + _sizeTitleH / 2.f + _origin.y + _screenSize.height * 0.1f;
+    Rect rect = Rect(0, imageSize.height, sizeInImageW, -sizeInImageH);
+    
+    //startx += _origin.x;
+    //py += _origin.y;
+    
+    //create in board
+    int number = 1;
+    for(int i = 0; i < boardsize.y; i++)
+    {
+        for(int j = 0; j < boardsize.x; j++)
+        {
+            _listPos.emplace_back(px, py);
+            
+            auto title = Title::createTitle(number, textureParent, rect);
+            title->setScale(ratio);
+            title->setPosition(px, py);
+            
+            this->addChild(title);
+            
+            _listTitles.push_back(title);
+            px += _sizeTitleW + RANGER_TITLES;
+            rect.origin.x += sizeInImageW;
+        }
+        py += _sizeTitleH + RANGER_TITLES;
+        px = startx;
+        rect.origin.x = 0;
+        rect.origin.y -= sizeInImageH;
+    }
+    
 }
 
 Title* GamePlay::findTitleByPos(const Vec2& pos)
@@ -275,7 +307,7 @@ void GamePlay::win()
 	if (_result == nullptr)
 	{
 		_result = Label::createWithTTF("WIN", LABEL_FONT, _screenSize.height * 0.1);
-		_result->setPosition(_result->getContentSize().width * 0.6, _screenSize.height - _result->getContentSize().height * 1.5f);
+		_result->setPosition(_result->getContentSize().width * 0.6, _screenSize.height - _result->getContentSize().height * 2.0f);
 		_result->setColor(Color3B::YELLOW);
 		this->addChild(_result);
         SimpleAudioEngine::getInstance()->stopBackgroundMusic();
