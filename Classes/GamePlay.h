@@ -33,6 +33,7 @@ private:
 
 	cocos2d::Size _screenSize;
     cocos2d::Vec2 _origin;
+    cocos2d::Vec2 _sizeBoard;
     
 	float _sizeTitleW;
     float _sizeTitleH;

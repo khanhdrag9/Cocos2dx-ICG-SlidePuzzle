@@ -66,10 +66,10 @@ bool GamePlay::init()
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchlistener, this);
 
 	//update
-	//_listTitles[_numberStart]->setVisible(false);
+	_listTitles[_numberStart]->setVisible(false);
 	backupNumberChanges = _numberChanges;
 	backupNumberStart = _numberStart;
-	//this->schedule(schedule_selector(GamePlay::setupBoard), TIME_SETUP_EACH_TITLE + 0.01, backupNumberChanges, TIME_PRE_PLAY);
+	this->schedule(schedule_selector(GamePlay::setupBoard), TIME_SETUP_EACH_TITLE + 0.01, backupNumberChanges, TIME_PRE_PLAY);
 	this->scheduleUpdate();
     
 	return true;
@@ -118,9 +118,11 @@ void GamePlay::createMenu()
 #elif
 	menu = Menu::create(buttonReset, nullptr);
 #endif
-	menu->setPosition(buttonAuto->getContentSize().width * 0.75f, _screenSize.height * 0.25);
-	menu->alignItemsVertically();
-	this->addChild(menu);
+	//menu->setPosition(buttonAuto->getContentSize().width * 0.75f, _screenSize.height * 0.8f);
+    menu->setPosition(_screenSize.width / 2.f + _origin.x, _sizeTitleH * _sizeBoard.y + _sizeBoard.y * RANGER_TITLES + _sizeTitleH * 1.5f);
+    menu->alignItemsHorizontallyWithPadding(_sizeTitleW);
+    
+	this->addChild(menu, 2);
 }
 
 #if CHEAT
@@ -142,11 +144,10 @@ void GamePlay::createTitles()
 
 	_screenSize = Director::getInstance()->getVisibleSize();
     _origin = Director::getInstance()->getVisibleOrigin();
-	float minSide = _screenSize.width < _screenSize.height ? _screenSize.width : _screenSize.height;
+	//float minSide = _screenSize.width < _screenSize.height ? _screenSize.width : _screenSize.height;
     auto imageSize = textureParent->getContentSize();
 
 	//create size of title
-    Vec2 boardsize = GamePlay::size1x1;
     float ratio = 1.f;
     if(imageSize.width > imageSize.height)
     {
@@ -158,11 +159,11 @@ void GamePlay::createTitles()
     }
     else
     {
-        boardsize = GamePlay::size1x1;
-        _sizeTitleW = imageSize.width / boardsize.x;
-        _sizeTitleH = imageSize.height / boardsize.y;
-        float ratioW = (_screenSize.width / boardsize.x) / _sizeTitleW;
-        float ratioH = (_screenSize.height / boardsize.y) / _sizeTitleH;
+        _sizeBoard = GamePlay::size1x1;
+        _sizeTitleW = imageSize.width / _sizeBoard.x;
+        _sizeTitleH = imageSize.height / _sizeBoard.y;
+        float ratioW = (_screenSize.width / _sizeBoard.x) / _sizeTitleW;
+        float ratioH = (_screenSize.height / _sizeBoard.y) / _sizeTitleH;
         
         ratio = ratioW < ratioH ? ratioW : ratioH;
         ratio *= 0.95;
@@ -174,20 +175,18 @@ void GamePlay::createTitles()
     _sizeTitleH *= ratio;
     
 	//create sprite
-    float centerX = _screenSize.width / 2.f;
+    //float centerX = _screenSize.width / 2.f;
     float startx = RANGER_TITLES + _sizeTitleW / 2.f + _origin.x;
     float px = startx;
     float py = RANGER_TITLES + _sizeTitleH / 2.f + _origin.y + _screenSize.height * 0.1f;
     Rect rect = Rect(0, imageSize.height, sizeInImageW, -sizeInImageH);
     
-    //startx += _origin.x;
-    //py += _origin.y;
     
     //create in board
     int number = 1;
-    for(int i = 0; i < boardsize.y; i++)
+    for(int i = 0; i < _sizeBoard.y; i++)
     {
-        for(int j = 0; j < boardsize.x; j++)
+        for(int j = 0; j < _sizeBoard.x; j++)
         {
             _listPos.emplace_back(px, py);
             
@@ -207,6 +206,7 @@ void GamePlay::createTitles()
         rect.origin.y -= sizeInImageH;
     }
     
+    _numberStart = _sizeBoard.x * _sizeBoard.y - 1;
 }
 
 Title* GamePlay::findTitleByPos(const Vec2& pos)
@@ -237,14 +237,14 @@ void GamePlay::setupBoard(float)
 	_historyMove.push_back(_numberStart);
 #endif
 	//get number around;
-		std::vector<int> around { _numberStart - NUMBER_TITLES , _numberStart - 1, _numberStart + 1, _numberStart + NUMBER_TITLES };
+		std::vector<int> around { _numberStart - (int)_sizeBoard.x , _numberStart - 1, _numberStart + 1, _numberStart + (int)_sizeBoard.x };
 		for (int j = 0; j < around.size();)
 		{
 			if (around[j] == _justnumber)
 				around.erase(around.begin() + j);
 			else if (around[j] < 0 || around[j] >= _listTitles.size())
 				around.erase(around.begin() + j);
-			else if (abs(_listPos[around[j]].x - _listPos[_numberStart].x) > _sizeTitle + RANGER_TITLES)
+			else if (abs(_listPos[around[j]].x - _listPos[_numberStart].x) > _sizeTitleW + RANGER_TITLES)
 				around.erase(around.begin() + j);
 			else
 				j++;
@@ -361,12 +361,12 @@ bool GamePlay::onTouchBegin(cocos2d::Touch* touch, cocos2d::Event* event)
 	if (!_isEndGame)
 	{
 		//get number around;
-		std::vector<int> around{ _numberStart - NUMBER_TITLES , _numberStart - 1, _numberStart + 1, _numberStart + NUMBER_TITLES };
+		std::vector<int> around{ _numberStart - (int)_sizeBoard.x , _numberStart - 1, _numberStart + 1, _numberStart + (int)_sizeBoard.x };
 		for (int j = 0; j < around.size();)
 		{
 			if (around[j] < 0 || around[j] >= _listTitles.size())
 				around.erase(around.begin() + j);
-			else if (abs(_listPos[around[j]].x - _listPos[_numberStart].x) > _sizeTitle + RANGER_TITLES)
+			else if (abs(_listPos[around[j]].x - _listPos[_numberStart].x) > _sizeTitleW + RANGER_TITLES * 2)
 				around.erase(around.begin() + j);
 			else
 				j++;
