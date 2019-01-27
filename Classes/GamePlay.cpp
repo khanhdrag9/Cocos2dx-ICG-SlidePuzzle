@@ -244,7 +244,7 @@ void GamePlay::setupBoard(float)
 				around.erase(around.begin() + j);
 			else if (around[j] < 0 || around[j] >= _listTitles.size())
 				around.erase(around.begin() + j);
-			else if (abs(_listPos[around[j]].x - _listPos[_numberStart].x) > _sizeTitleW + RANGER_TITLES)
+			else if (abs(_listPos[around[j]].x - _listPos[_numberStart].x) > _sizeTitleW + RANGER_TITLES * 2)
 				around.erase(around.begin() + j);
 			else
 				j++;
