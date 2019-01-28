@@ -30,6 +30,7 @@ private:
 	std::vector<Title*> _listTitles;
 	std::vector<cocos2d::Vec2> _listPos;
 	bool _isEndGame;
+	bool _isOrdering;
 
 	cocos2d::Size _screenSize;
     cocos2d::Vec2 _origin;

@@ -18,6 +18,7 @@ const Vec2 GamePlay::size9x16 = Vec2(4,6);
 
 GamePlay::GamePlay() :
 	_isEndGame(true),
+	_isOrdering(true),
 	_numberChanges(25),
 	_numberStart(15),
 	_titlePressed(nullptr),
@@ -359,7 +360,7 @@ void GamePlay::reset()
 
 bool GamePlay::onTouchBegin(cocos2d::Touch* touch, cocos2d::Event* event)
 {
-	if (!_isEndGame)
+	if (!_isEndGame && !_isOrdering)
 	{
 		//get number around;
 		std::vector<int> around{ _numberStart - (int)_sizeBoard.x , _numberStart - 1, _numberStart + 1, _numberStart + (int)_sizeBoard.x };
@@ -417,6 +418,7 @@ void GamePlay::onTouchMove(Touch* touch, Event* event)
 
 void GamePlay::onTouchRelease(Touch* touch, Event* event)
 {
+	if (!_isEndGame && !_isOrdering)
 #if CHEAT
 	CCLOG("play: %d", _numberStart);
 	_historyMove.push_back(_numberStart);
