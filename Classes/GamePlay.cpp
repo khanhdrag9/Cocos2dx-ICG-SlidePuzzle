@@ -118,7 +118,9 @@ void GamePlay::createMenu()
 	_menu = Menu::create(buttonReset, nullptr);
 #endif
 	//menu->setPosition(buttonAuto->getContentSize().width * 0.75f, _screenSize.height * 0.8f);
-	_menu->setPosition(_screenSize.width / 2.f + _origin.x, _sizeTitleH * _sizeBoard.y + _sizeBoard.y * RANGER_TITLES + _sizeTitleH * 1.5f);
+	float sizemore = _sizeTitleW > _sizeTitleH ? _sizeTitleW : _sizeTitleH;
+	Vec2 menupos = Vec2(_screenSize.width / 2.f + _origin.x, _sizeTitleH * _sizeBoard.y + _sizeBoard.y * RANGER_TITLES + sizemore + _origin.y);
+	_menu->setPosition(menupos);
 	_menu->alignItemsHorizontallyWithPadding(_sizeTitleW);
     
 	this->addChild(_menu, 2);
@@ -149,25 +151,54 @@ void GamePlay::createTitles()
 
 	//create size of title
     float ratio = 1.f;
+	
     if(imageSize.width > imageSize.height)
     {
-        
+		float ratioWHImage = imageSize.width / imageSize.height;
+		if (ratioWHImage < (16.f / 9.f) && ratioWHImage >(4.f / 3.f))
+		{
+			_sizeBoard = GamePlay::size9x16;
+
+		}
+		else if (ratioWHImage <= (4.f / 3.f))
+		{
+			_sizeBoard = GamePlay::size4x3;
+
+		}
     }
     else if(imageSize.height > imageSize.width)
     {
-        
+		float ratioWHImage = imageSize.height / imageSize.width;
+		if (ratioWHImage < (16.f / 9.f) && ratioWHImage > (4.f / 3.f))
+		{
+			_sizeBoard = GamePlay::size16x9;
+
+		}
+		else if(ratioWHImage <= (4.f / 3.f))
+		{
+			_sizeBoard = GamePlay::size3x4;
+
+		}
     }
     else //for image 1x1
     {
         _sizeBoard = GamePlay::size1x1;
-        _sizeTitleW = imageSize.width / _sizeBoard.x;
+        /*_sizeTitleW = imageSize.width / _sizeBoard.x;
         _sizeTitleH = imageSize.height / _sizeBoard.y;
         float ratioW = (_screenSize.width / _sizeBoard.x) / _sizeTitleW;
         float ratioH = (_screenSize.height / _sizeBoard.y) / _sizeTitleH;
         
         ratio = ratioW < ratioH ? ratioW : ratioH;
-        ratio *= 0.95;
+        ratio *= 0.95;*/
     }
+
+	_sizeTitleW = imageSize.width / _sizeBoard.x;
+	_sizeTitleH = imageSize.height / _sizeBoard.y;
+	float ratioW = (_screenSize.width / _sizeBoard.x) / _sizeTitleW;
+	float ratioH = (_screenSize.height / _sizeBoard.y) / _sizeTitleH;
+
+	ratio = ratioW < ratioH ? ratioW : ratioH;
+	ratio *= 0.95;
     
     float sizeInImageW = _sizeTitleW;
     float sizeInImageH = _sizeTitleH;

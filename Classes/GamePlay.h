@@ -38,7 +38,6 @@ private:
     
 	float _sizeTitleW;
     float _sizeTitleH;
-    float _sizeTitle;
 	int _numberStart;	//index of empty title
 	int _justnumber;
 	int _numberChanges;
