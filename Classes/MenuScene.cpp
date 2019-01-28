@@ -28,7 +28,7 @@ bool MenuScene::init()
     auto sz = Director::getInstance()->getVisibleSize();
     auto ori = Director::getInstance()->getVisibleOrigin();
     
-    Label* title = Label::createWithTTF("Slide Puzzle by Khanh", LABEL_FONT, sz.height * 0.1);
+    Label* title = Label::createWithTTF("Slide Puzzle", LABEL_FONT, sz.height * 0.1);
     title->setColor(Color3B::YELLOW);
     title->setPosition(sz.width / 2.f + ori.x, sz.height * 0.8 + ori.y);
     
