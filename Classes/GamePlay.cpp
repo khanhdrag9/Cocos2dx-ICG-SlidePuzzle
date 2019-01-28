@@ -98,7 +98,9 @@ void GamePlay::update(float dt)
 		else
 		{
 			_titleIsAuto = findTitleByPos(_listPos[_historyMove[_historyMove.size() - 1]]);
-			_titleIsAuto->runAction(MoveTo::create(SPEED_MOVE_AUTO, _listPos[_numberStart]));
+			//_titleIsAuto->runAction(MoveTo::create(SPEED_MOVE_AUTO, _listPos[_numberStart]));
+            _titleIsAuto->setPosition(_listPos[_numberStart]);
+            
 		}
 
 		if (_historyMove.size() <= 0)_isAuto = false;
@@ -244,7 +246,7 @@ Title* GamePlay::findTitleByPos(const Vec2& pos)
 {
 	for (auto x : _listTitles)
 	{
-		if (x->getPosition() == pos)
+		if (x->getBoundingBox().containsPoint(pos))
 			return x;
 	}
 	return nullptr;
