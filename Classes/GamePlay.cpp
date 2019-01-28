@@ -127,7 +127,8 @@ void GamePlay::createMenu()
 #if CHEAT
 void GamePlay::autoPlay(Ref* pSender)
 {
-	_isAuto = true;
+	if(!_isOrdering && !_isEndGame)
+		_isAuto = true;
 }
 #endif
 
@@ -260,7 +261,10 @@ void GamePlay::setupBoard(float)
 		}
 	_numberChanges--;
 	if (_numberChanges <= 0)
+	{
 		_isEndGame = false;
+		_isOrdering = false;
+	}
 }
 
 void GamePlay::mergeImage(float)
