@@ -155,7 +155,7 @@ void GamePlay::createTitles()
     {
         
     }
-    else
+    else //for image 1x1
     {
         _sizeBoard = GamePlay::size1x1;
         _sizeTitleW = imageSize.width / _sizeBoard.x;
@@ -267,15 +267,18 @@ void GamePlay::mergeImage(float)
 	for (auto x : _listTitles)
 	{
 		Vec2 move;
+		int axisX = ceil(_sizeBoard.x / 2.f) - 1;
+		int axisY = ceil(_sizeBoard.y / 2.f) - 1;
 		
-		int nx = abs((_screenSize.width * 0.5 - x->getPositionX()) / _sizeTitle) + 1;
-		int ny = abs((_screenSize.height * 0.5 - x->getPositionY()) / _sizeTitle) + 1;
+		int nx = abs((_screenSize.width * 0.5 - x->getPositionX()) / _sizeTitleW) + 1;
+		int ny = abs((_screenSize.height * 0.5 - x->getPositionY()) / _sizeTitleH) + 1;
 		float duration = 0.5;
 
-		if(nx==1) move.x = RANGER_TITLES * 0.5 * nx;
+		
+		if(nx==axisX) move.x = RANGER_TITLES * 0.5 * nx;
 		else move.x = RANGER_TITLES * nx;
 
-		if(ny==1) move.y = RANGER_TITLES * 0.5 * ny;
+		if(ny==axisY) move.y = RANGER_TITLES * 0.5 * ny;
 		else move.y = RANGER_TITLES * ny;
 
 		if (x->getPositionX() > _screenSize.width * 0.5)move.x *= -1;
