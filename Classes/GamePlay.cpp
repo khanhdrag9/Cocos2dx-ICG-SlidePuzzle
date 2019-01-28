@@ -78,7 +78,7 @@ bool GamePlay::init()
 
 void GamePlay::update(float dt)
 {
-	if(!_isEndGame)
+	if(!_isEndGame && !_isOrdering)
 		if (checkWin())
 			win();
 
@@ -290,6 +290,7 @@ void GamePlay::mergeImage(float)
 		if (x->getPositionY() > _screenSize.height * 0.5)move.y *= -1;
 
 		x->runAction(MoveBy::create(duration, move));
+		x->setVisible(true);
 	}
 }
 
