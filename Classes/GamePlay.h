@@ -49,6 +49,7 @@ private:
 	cocos2d::Vec2 _oldPosTitlePressed;
 
 	cocos2d::Label* _result;
+	cocos2d::Menu* _menu;
 
 #if CHEAT
 	//cheat auto play

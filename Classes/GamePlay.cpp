@@ -109,20 +109,18 @@ void GamePlay::update(float dt)
 
 void GamePlay::createMenu()
 {
-	Menu* menu;
-
 	MenuItemFont* buttonReset = MenuItemFont::create("Reset", CC_CALLBACK_0(GamePlay::reset, this));
 #if CHEAT
 	MenuItemFont* buttonAuto = MenuItemFont::create("Auto", CC_CALLBACK_1(GamePlay::autoPlay, this));
-	menu = Menu::create(buttonAuto, buttonReset, nullptr);
+	_menu = Menu::create(buttonAuto, buttonReset, nullptr);
 #elif
-	menu = Menu::create(buttonReset, nullptr);
+	_menu = Menu::create(buttonReset, nullptr);
 #endif
 	//menu->setPosition(buttonAuto->getContentSize().width * 0.75f, _screenSize.height * 0.8f);
-    menu->setPosition(_screenSize.width / 2.f + _origin.x, _sizeTitleH * _sizeBoard.y + _sizeBoard.y * RANGER_TITLES + _sizeTitleH * 1.5f);
-    menu->alignItemsHorizontallyWithPadding(_sizeTitleW);
+	_menu->setPosition(_screenSize.width / 2.f + _origin.x, _sizeTitleH * _sizeBoard.y + _sizeBoard.y * RANGER_TITLES + _sizeTitleH * 1.5f);
+	_menu->alignItemsHorizontallyWithPadding(_sizeTitleW);
     
-	this->addChild(menu, 2);
+	this->addChild(_menu, 2);
 }
 
 #if CHEAT
@@ -307,7 +305,7 @@ void GamePlay::win()
 	if (_result == nullptr)
 	{
 		_result = Label::createWithTTF("WIN", LABEL_FONT, _screenSize.height * 0.1);
-		_result->setPosition(_screenSize.width / 2.f + _origin.x, _screenSize.height - _result->getContentSize().height);
+		_result->setPosition(_screenSize.width / 2.f + _origin.x, _menu->getPositionY() + _sizeTitleH / 2.f);
 		_result->setColor(Color3B::YELLOW);
 		this->addChild(_result);
         SimpleAudioEngine::getInstance()->stopBackgroundMusic();
