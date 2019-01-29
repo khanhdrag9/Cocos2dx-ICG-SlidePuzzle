@@ -7,7 +7,7 @@
 
 #define LABEL_FONT "fonts/Marker Felt.ttf"
 
-#define IMAGE_PARENT "Image.JPG"
+#define IMAGE_PARENT "splashKW.jpg"
 #define NUMBER_TITLES 4
 #define RANGER_TITLES 5
 

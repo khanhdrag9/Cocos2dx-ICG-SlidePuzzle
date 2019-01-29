@@ -12,9 +12,9 @@ int backupNumberStart;
 
 const Vec2 GamePlay::size1x1 = Vec2(4,4);
 const Vec2 GamePlay::size3x4 = Vec2(4,4);
-const Vec2 GamePlay::size4x3 = Vec2(4,4);
-const Vec2 GamePlay::size16x9 = Vec2(6,4);
-const Vec2 GamePlay::size9x16 = Vec2(4,6);
+const Vec2 GamePlay::size4x3 = Vec2(2,2);
+const Vec2 GamePlay::size16x9 = Vec2(4,4);
+const Vec2 GamePlay::size9x16 = Vec2(4,4);
 
 GamePlay::GamePlay() :
 	_isEndGame(true),
@@ -235,6 +235,7 @@ void GamePlay::createTitles()
             _listTitles.push_back(title);
             px += _sizeTitleW + RANGER_TITLES;
             rect.origin.x += sizeInImageW;
+			number++;
         }
         py += _sizeTitleH + RANGER_TITLES;
         px = startx;
@@ -304,26 +305,22 @@ void GamePlay::setupBoard(float)
 
 void GamePlay::mergeImage(float)
 {
+	int r = 0;
+	int c = 0;
 	for (auto x : _listTitles)
 	{
 		Vec2 move;
-		int axisX = ceil(_sizeBoard.x / 2.f) - 1;
-		int axisY = ceil(_sizeBoard.y / 2.f) - 1;
-		
-		int nx = abs((_screenSize.width * 0.5 - x->getPositionX()) / _sizeTitleW) + 1;
-		int ny = abs((_screenSize.height * 0.5 - x->getPositionY()) / _sizeTitleH) + 1;
 		float duration = 0.5;
 
-		
-		if(nx==axisX) move.x = RANGER_TITLES * 0.5 * nx;
-		else move.x = RANGER_TITLES * nx;
+		move.x = -1 * RANGER_TITLES * c;
+		move.y = -1 * RANGER_TITLES * r;
 
-		if(ny==axisY) move.y = RANGER_TITLES * 0.5 * ny;
-		else move.y = RANGER_TITLES * ny;
-
-		if (x->getPositionX() > _screenSize.width * 0.5)move.x *= -1;
-		if (x->getPositionY() > _screenSize.height * 0.5)move.y *= -1;
-
+		++c;
+		if (c == _sizeBoard.x)
+		{
+			c = 0;
+			++r;
+		}
 		x->runAction(MoveBy::create(duration, move));
 		x->setVisible(true);
 	}
@@ -378,24 +375,7 @@ void GamePlay::lose()
 
 
 void GamePlay::reset()
-{
-//#if CHEAT
-//    _isAuto = false;
-//    _historyMove.clear();
-//#endif
-//    _numberChanges = backupNumberChanges;
-//    _numberStart = backupNumberStart;
-//
-//    if (_result)
-//        _result->setVisible(false);
-//
-//    for (int i = 0; i < _listTitles.size(); i++)
-//    {
-//        //_listTitles[i]->setPosition(_listPos[i]);
-//        _listTitles[i]->runAction(MoveTo::create(0.2, _listPos[i]));
-//    }
-//    this->schedule(schedule_selector(GamePlay::setupBoard), TIME_SETUP_EACH_TITLE + 0.01, backupNumberChanges, TIME_PRE_PLAY);
-    
+{    
     SimpleAudioEngine::getInstance()->stopBackgroundMusic();
     SimpleAudioEngine::getInstance()->playEffect(SOUND_RESET);
     
@@ -413,7 +393,8 @@ bool GamePlay::onTouchBegin(cocos2d::Touch* touch, cocos2d::Event* event)
 		{
 			if (around[j] < 0 || around[j] >= _listTitles.size())
 				around.erase(around.begin() + j);
-			else if (abs(_listPos[around[j]].x - _listPos[_numberStart].x) > _sizeTitleW + RANGER_TITLES * 2)
+			//else if (abs(_listPos[around[j]].x - _listPos[_numberStart].x) > (_sizeTitleW + RANGER_TITLES + _sizeTitleW / 2.f))
+			else if ((_listPos[around[j]].x != _listPos[_numberStart].x) && (_listPos[around[j]].y != _listPos[_numberStart].y))
 				around.erase(around.begin() + j);
 			else
 				j++;
@@ -421,6 +402,7 @@ bool GamePlay::onTouchBegin(cocos2d::Touch* touch, cocos2d::Event* event)
 
 		//get list titles can slide
 		std::vector<Title*> titlesCanMove;
+
 		for (auto title : _listTitles)
 		{
 			for (int i = 0; i < around.size();)
@@ -445,7 +427,6 @@ bool GamePlay::onTouchBegin(cocos2d::Touch* touch, cocos2d::Event* event)
 			if (x->getBoundingBox().containsPoint(touchPos))
 			{
 				_oldPosTitlePressed = x->getPosition();
-				//_spaceTouchAndTitle = touchPos - x->getPosition();
 				_titlePressed = x;
 
 				return true;
@@ -453,7 +434,7 @@ bool GamePlay::onTouchBegin(cocos2d::Touch* touch, cocos2d::Event* event)
 		}
 	}
 
-	return false;
+	return true;
 }
 
 void GamePlay::onTouchMove(Touch* touch, Event* event)
@@ -484,8 +465,6 @@ void GamePlay::onTouchRelease(Touch* touch, Event* event)
 			}
 	}
 	_titlePressed = nullptr;
-	//_directionMove = -1;
-	//_spaceTouchAndTitle = Vec2(0, 0);
 	_oldPosTitlePressed = Vec2(0, 0);
 }
 
