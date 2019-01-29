@@ -69,6 +69,7 @@ private:
 	Title* findTitleByPos(const cocos2d::Vec2& pos);
 	const cocos2d::Vec2& findPosByTitle(const Title* title) const;
 
+	void canPlay(float);
 	void win();
 	void lose();
 	void reset();

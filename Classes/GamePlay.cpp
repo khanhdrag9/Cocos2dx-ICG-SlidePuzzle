@@ -83,7 +83,7 @@ void GamePlay::update(float dt)
 			win();
 
 #if CHEAT
-	if (_isAuto)
+	if (_isAuto && _historyMove.size() > 0)
 	{
 		if (_titleIsAuto != nullptr)
 		{
@@ -103,7 +103,10 @@ void GamePlay::update(float dt)
             
 		}
 
-		if (_historyMove.size() <= 0)_isAuto = false;
+		if (_historyMove.size() <= 0)
+		{
+			this->scheduleOnce(schedule_selector(GamePlay::canPlay), 0.5f);
+		}
 	}
 
 #endif
@@ -295,8 +298,7 @@ void GamePlay::setupBoard(float)
 	_numberChanges--;
 	if (_numberChanges <= 0)
 	{
-		_isEndGame = false;
-		_isOrdering = false;
+		this->scheduleOnce(schedule_selector(GamePlay::canPlay), 0.5f);
 	}
 }
 
@@ -338,6 +340,11 @@ bool GamePlay::checkWin()
 	return true;
 }
 
+void GamePlay::canPlay(float)
+{
+	_isEndGame = false;
+	_isOrdering = false;
+}
 
 void GamePlay::win()
 {
